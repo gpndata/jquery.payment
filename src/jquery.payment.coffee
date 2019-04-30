@@ -73,7 +73,7 @@ $.payment.cards = cards = [
   }
   {
     type: 'discover'
-    patterns: [60, 64, 65, 622]
+    patterns: [60, 64, 65, [622126, 622925]]
     format: defaultFormat
     length: [16]
     cvcLength: [3]
@@ -101,6 +101,15 @@ cardFromNumber = (num) ->
   num = (num + '').replace(/\D/g, '')
   for card in cards
     for pattern in card.patterns
+      if typeof pattern == 'object'
+         p1 = pattern[0]
+         p2 = pattern[1]
+         len = p1.toString().length
+         len = p2.toString().length if p2.toString().length > len
+         n = num.substr(0, len)
+         if n >= p1 && n <= p2
+            return card
+         continue
       p = pattern + ''
       return card if num.substr(0, p.length) == p
 
